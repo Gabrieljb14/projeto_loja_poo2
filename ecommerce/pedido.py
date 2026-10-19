@@ -2,6 +2,7 @@ from ecommerce.item_pedido import ItemPedido
 from ecommerce.pagamento import Pagamento
 from ecommerce.produto import Produto
 from ecommerce.status_pedido import StatusPedido
+from ecommerce.estrategia_desconto import EstrategiaDesconto
 
 class Pedido:
 
@@ -9,6 +10,12 @@ class Pedido:
         self.itens: list[ItemPedido] = []
         self._status = StatusPedido.CRIADO
         self._pagamento: Pagamento | None = None
+
+    def calcular_total(self, estrategia_desconto: EstrategiaDesconto | None = None) -> float:
+        total = sum(item.calcular_subtotal() for item in self._itens)
+        if estrategia_desconto is None:
+            return total
+        return estrategia_desconto.calcular(total)
 
     @property
     def pagamento(self) -> Pagamento | None:
@@ -31,6 +38,16 @@ class Pedido:
     def calcular_total(self) -> float:
         return sum(item.calcular_subtotal() for item in self._itens)
 
+    def calcular_total_com_desconto(self, tipo_cliente: str) -> float:
+        total = self.calcular_total()
+        if tipo_cliente == "vip":
+            total -= total * 0.15
+        elif tipo_cliente == "frequente":
+            total -= total * 0.10
+        elif tipo_cliente == "aniversario":
+            total -= total * 0.20
+        return total
+
     def quantidade_itens(self) -> int:
         return len(self._itens)
 
@@ -40,6 +57,11 @@ class Pedido:
                 f"Transicao invalida: {self._status} -> {novo_status}"
             )
         self._status = novo_status
+
+        def confirmar_pagamento(self) -> None:
+            self._transicionar(StatusPedido.PAGO)
+            self._pagamento = Pagamento(self, self.calcular_total())
+            self._pagamento.confirmar()
 
     def pagar(self) -> None:
         self._transicionar(StatusPedido.PAGO)

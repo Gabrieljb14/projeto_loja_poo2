@@ -21,6 +21,7 @@ class Carrinho:
         return len(self.itens)
 
 
+
 if __name__ == "__main__":  # 
     from ecommerce.categoria import Categoria
     from ecommerce.produto import Produto
@@ -43,3 +44,6 @@ if __name__ == "__main__":  #
         for item in self.itens:
             pedido.adicionar_item(item.produto, item.quantidade)
         return pedido
+
+    def esvaziar(self) -> None:
+        self.itens.clear()

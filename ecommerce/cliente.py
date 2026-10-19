@@ -14,6 +14,16 @@ class Cliente:
     def possui_carrinho(self) -> bool:
         return self.carrinho is not None
 
+    def finalizar_compra(self) -> "Pedido":
+        if self.carrinho is None:
+            raise ValueError("Cliente nao possui carrinho")
+        if not self.carrinho.itens:
+            raise ValueError("Carrinho vazio")
+        pedido = self.carrinho.finalizar()
+        self._pedidos.append(pedido)
+        self.carrinho.esvaziar()
+        return pedido
+
     def adicionar_pedido(self, pedido: "Pedido") -> None:
         self._pedidos.append(pedido)
 

@@ -36,7 +36,7 @@ class TestPedido:
         with pytest.raises(ValueError):
             pedido.adicionar_item(self.mouse, 1)
 
-     def test_pagar(self) -> None:
+    def test_pagar(self) -> None:
         pedido = Pedido()
         pedido.adicionar_item(self.notebook, 1)
         pedido.pagar()
@@ -70,3 +70,38 @@ class TestPedido:
         pedido.adicionar_item(self.notebook, 1)
         with pytest.raises(ValueError):
             pedido.enviar()
+
+    def test_desconto_cliente_vip(self) -> None:
+        pedido = Pedido()
+        pedido.adicionar_item(self.notebook, 1)
+        pedido.calcular_total_com_desconto("vip") == 3500.0 * 0.85
+
+def test_desconto_cliente_frequente(self) -> None:
+    pedido = Pedido()
+    pedido.adicionar_item(self.notebook, 1)
+    assert pedido.calcular_total_com_desconto("frequente") == 3500.0 * 0.90
+
+def test_desconto_aniversario(self) -> None:
+    pedido = Pedido()
+    pedido.adicionar_item(self.notebook, 1)
+    assert pedido.calcular_total_com_desconto("aniversario") == 3500.0 * 0.80
+
+def test_sem_desconto_cliente_comum(self) -> None:
+    pedido = Pedido()
+    pedido.adicionar_item(self.notebook, 1)
+    assert pedido.calcular_total_com_desconto("comum") == 3500.0
+
+def test_calcular_total_sem_estrategia(self) -> None:
+    pedido = Pedido()
+    pedido.adicionar_item(self.notebook, 1)
+    assert pedido.calcular_total() == 3500.0
+
+def test_calcular_total_com_estrategia_sem_desconto(self) -> None:
+    pedido = Pedido()
+    pedido.adicionar_item(self.notebook, 1)
+    assert pedido.calcular_total(SemDesconto()) == 3500.0
+
+def test_calcular_total_com_desconto_percentual(self) -> None:
+    pedido = Pedido()
+    pedido.adicionar_item(self.notebook, 1)
+    assert pedido.calcular_total(DescontoPercentual(15)) == 3500.0 * 0.85
